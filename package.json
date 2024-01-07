@@ -1,0 +1,25 @@
+{
+  "name": "mern_learning",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdityaUN/MERN_learning.git"
+  },
+  "author": "Aditya Nanoskar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdityaUN/MERN_learning/issues"
+  },
+  "homepage": "https://github.com/AdityaUN/MERN_learning#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
