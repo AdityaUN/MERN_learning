@@ -29,7 +29,7 @@ app.get('/signup', (req, res) => {
 app.post('/signup', (req, res) => {
     console.log(req.body);
 
-    const { email, password } = req.body;
+    const {email, password} = req.body;
   
     // Check if email or password is missing
     if (!email || !password) {
@@ -55,8 +55,26 @@ app.post('/signup', (req, res) => {
     console.log(users);
 });
 
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+})
+
 app.post('/login', (req, res) => {
-    res.send("You are at login");
+    console.log(req.body);
+
+    const {email, password} = req.body;
+
+    const user = users.find(x => x.email === email)
+
+    if(!user){
+        res.status(403).json( { message: 'User not found'});
+    }
+    else if(user.password != password){
+        res.status(403).json( { message: 'Incorrect password'});
+    }
+    else{
+        res.send('Login successful');
+    }
 })
 
 app.listen(PORT, (err) => {
