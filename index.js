@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require('path');
 const bodyParser = require('body-parser');
+const fs = require("fs");
 
 const PORT = 8000;
 const app = express();
@@ -12,10 +13,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+let usersFilePath = path.join(__dirname, 'var', 'users.json')
 let users = [];
 
+try {
+    users = JSON.parse(fs.readFileSync(usersFilePath, "utf-8"));
+} catch (err) {
+    console.error("Error loading users:", err);
+}
+
 app.get('/signup', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'signuppage.html'));
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 })
 
 app.post('/signup', (req, res) => {
@@ -37,7 +45,10 @@ app.post('/signup', (req, res) => {
   
     // Add the new user to the array
     users.push({ email, password });
-  
+
+    // Save users to the local file
+    fs.writeFileSync(usersFilePath, JSON.stringify(users));
+
     // Respond with success message
     res.status(201).json({ message: 'User registered successfully.' });
 
