@@ -1,9 +1,12 @@
 const express = require("express");
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const fs = require("fs");
+const jwt = require('jsonwebtoken');
 
 const PORT = 8000;
+const secretKey = 'your-secret-key';
 const app = express();
 
 
@@ -12,6 +15,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Middleware to parse JSON in the request body
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+//Use cookieparser
+app.use(cookieParser());
+
+// Middleware to authenticate user using JWT
+const authenticateJWT = (req, res, next) => {
+    const token = req.cookies.access_token;
+
+    console.log(token);
+    if (!token) return res.sendStatus(401); // Unauthorized
+
+    jwt.verify(token, secretKey, (err, user) => {
+        if (err) return res.sendStatus(403); // Forbidden
+        req.user = user;
+        next();
+    });
+};
 
 let usersFilePath = path.join(__dirname, 'var', 'users.json')
 let users = [];
@@ -73,8 +92,17 @@ app.post('/login', (req, res) => {
         res.status(403).json( { message: 'Incorrect password'});
     }
     else{
-        res.send('Login successful');
+        const token = jwt.sign(user.email, secretKey);
+        
+        // Set the token as an HTTP-only cookie
+        res.cookie('access_token', token, { httpOnly: true });
+        
+        res.redirect('/dashboard');
     }
+})
+
+app.get('/dashboard', authenticateJWT, (req, res) => {
+    res.send('This is Dashboard');
 })
 
 app.listen(PORT, (err) => {
